@@ -6,8 +6,8 @@ body,div{
 
 #TimeAxisArea{
     width: 600px;
-    height: 280px;
+    height: 420px;
     background-color: #eeeeee;
     border: 3px solid #cccccc;
-    border-radius: 8px;
+    border-radius: 12px;
 }
