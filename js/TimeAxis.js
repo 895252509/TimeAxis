@@ -11,21 +11,7 @@ function TypeError(_functionName){
 var TimeAxis= (function (){
     //alert(__window.document.baseURI);
 
-/*  
-    function _SVGObj(id,svgdom){
-        this.id =id ||"";
-        this.svgdom = svgdom ;
-    }
-    _SVGObj.prototype={
-        equal : function(other){
-            if(other instanceof _SVGObj){
-                other.
-            }
-        }
-    }
-    var a = new _SVGObj();
 
-*/
 /**
  * 数据结构定义
  * 
@@ -43,14 +29,16 @@ var TimeAxis= (function (){
 
     function ZSlider(_x,_y,_w,_h,_r){
         this.SVGDom = document.createElementNS("http://www.w3.org/2000/svg","polygon");
+        this.baseLine = 110;
         this.baseX = _x || 0;
-        this.baseY = _y || 0;
+        this.baseY = this.baseLine || _y || 0;
         this.offsetX = 0;
         this.offsetY = 0;
         this.width = _w || 0;
         this.height = _h || 0;
         this.rat = _r || 0.0;
         this.isClick = false;
+        
         
         __SVGDomChilds.push(this);
 
@@ -66,7 +54,8 @@ var TimeAxis= (function (){
             this.isClick = true;
             var tmpslider = findSlider(this);
             tmpslider.offsetX = e.offsetX;// - tmpslider.baseX;
-            tmpslider.offsetY = e.offsetY;// - tmpslider.baseY;
+            if(typeof tmpslider.baseLine === 'undefined')
+                tmpslider.offsetY = e.offsetY;// - tmpslider.baseY;
             
         }
         this.SVGDom.onmouseup = function(){
@@ -77,10 +66,12 @@ var TimeAxis= (function (){
                 var tmpslider = findSlider(this);
 
                 tmpslider.baseX += (e.offsetX - tmpslider.offsetX);
-                tmpslider.baseY += (e.offsetY - tmpslider.offsetY);
+                if(typeof tmpslider.baseLine === 'undefined')
+                    tmpslider.baseY += (e.offsetY - tmpslider.offsetY);
 
                 tmpslider.offsetX = e.offsetX;// - tmpslider.baseX;
-                tmpslider.offsetY = e.offsetY;// - tmpslider.baseY;
+                if(typeof tmpslider.baseLine === 'undefined')
+                    tmpslider.offsetY = e.offsetY;// - tmpslider.baseY;
 
                 if( tmpslider!= null )
                     tmpslider.ReMoveAndReSize();
@@ -98,6 +89,56 @@ var TimeAxis= (function (){
             (this.baseX-this.width/2).toString()+","+(this.baseY+this.height*this.rat).toString()
         );
     }
+
+
+    function ZAxis(){
+        this.baseX = 100;
+        this.baseY = 100;
+        this.width = 400;
+        this.height = 10;
+        this.strokeWidth = 1;
+        this.fill = "#777777";
+        this.SVGDom = document.createElementNS("http://www.w3.org/2000/svg","g");
+        var mainDom = document.createElementNS("http://www.w3.org/2000/svg","rect");
+        mainDom.setAttribute("x",this.baseX.toString());
+        mainDom.setAttribute("y",this.baseY.toString());
+        mainDom.setAttribute("width",this.width.toString());
+        mainDom.setAttribute("height",this.height.toString());
+        this.SVGDom.appendChild(mainDom);
+
+        this.SVGDom.setAttribute("style",
+            "stroke-width:1;fill:"+this.fill+";opacity:0.9;");
+    }
+
+    function ZButton(_x,_y,_w,_h){
+        this.SVGDom = document.createElementNS("http://www.w3.org/2000/svg","g");
+        this.baseX = _x || 0;
+        this.baseY = _y || 0;
+        this.width = _w || 0;
+        this.height = _h || 0;
+
+        var box = document.createElementNS("http://www.w3.org/2000/svg","rect");
+        box.setAttribute("x",this.baseX.toString());
+        box.setAttribute("y",this.baseY.toString());
+        box.setAttribute("width",this.width.toString());
+        box.setAttribute("height",this.height.toString());
+        box.setAttribute("style","opacity:0.2");
+
+        var text = document.createElementNS("http://www.w3.org/2000/svg","text");
+        text.setAttribute("style","font-family:Verdana;font-size:16");
+        text.setAttribute("x", this.baseX.toString()+"");
+        text.setAttribute("y", (this.baseY+20).toString()+"");
+        text.innerHTML = "创建滑块";
+
+        this.SVGDom.setAttribute("style","stroke-width:1;fill:#eeeeee;stroke:#000000;");
+        this.SVGDom.appendChild(text);
+        this.SVGDom.appendChild(box);
+
+        box.onclick = function (){  debugger;
+            __SVGDom.appendChild(new ZSlider(150,110,20,20,0.5).SVGDom);
+        }
+    }
+
 /**
  * 私有变量定义
  * 
@@ -115,9 +156,8 @@ var TimeAxis= (function (){
         for(var i=0;i<__SVGDomChilds.length;i++){
             if(__SVGDomChilds[i].SVGDom === obj)
                 return __SVGDomChilds[i];
-            else
-                return null;
         }
+        return null;
     }
     function setAttr(_svgdom,key,value){
         if(! _svgdom instanceof SVGElement)
@@ -127,10 +167,6 @@ var TimeAxis= (function (){
 
     }
 
-    function _polygonReMoveAndReSize(obj){
-        if(! obj instanceof SVGPolygonElement)
-            throw TypeError("_polygonReMoveAndReSize");
-    }
 
     function createSlider(_x,_y){debugger;
         var ix,iy;              //滑块指示点的坐标
@@ -183,8 +219,9 @@ var TimeAxis= (function (){
     return function (id){debugger;
         this.aa = 1;  
         areaInit(id);
-        __SVGDom.appendChild(new ZSlider(10,10,20,20,0.5).SVGDom);
-    
+        __SVGDom.appendChild(new ZSlider(150,110,20,20,0.5).SVGDom);
+        __SVGDom.appendChild(new ZAxis().SVGDom);
+        __SVGDom.appendChild(new ZButton(10,10,70,30).SVGDom);
     }
 
 })();
