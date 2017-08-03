@@ -1,14 +1,4 @@
-/**
- * 扩展SVG Dom方法
- * 
- */
-SVGPolygonElement.z_baseX = 0;
-SVGPolygonElement.z_baseY = 0;
 
-SVGPolygonElement.prototype.z_moveTo = function (_x,_y){
-
-
-}
 
 /**
  * 定义常用错误
@@ -85,20 +75,16 @@ var TimeAxis= (function (){
         this.SVGDom.onmousemove = function (e){
             if(this.isClick){//debugger;
                 var tmpslider = findSlider(this);
-                console.log("e:"+e.offsetX+","+e.offsetY);
-                console.log("this.last:"+tmpslider.offsetX+","+tmpslider.offsetY);
-                
+
                 tmpslider.baseX += (e.offsetX - tmpslider.offsetX);
                 tmpslider.baseY += (e.offsetY - tmpslider.offsetY);
-                console.log("this.base:"+tmpslider.baseX+","+tmpslider.baseY);
 
                 tmpslider.offsetX = e.offsetX;// - tmpslider.baseX;
                 tmpslider.offsetY = e.offsetY;// - tmpslider.baseY;
 
                 if( tmpslider!= null )
                     tmpslider.ReMoveAndReSize();
-                //tmpslider.offsetX = tmpslider.baseX;
-                //tmpslider.offsetY = tmpslider.baseY;
+
             }
         }
 
@@ -186,7 +172,7 @@ var TimeAxis= (function (){
 
         return islider;
     }
-    
+
     function areaInit(_id){
         if(typeof _id === 'undefined')
             __SVGDom = document.getElementById("TimeAxis");
