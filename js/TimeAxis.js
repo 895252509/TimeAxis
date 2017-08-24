@@ -8,8 +8,6 @@ function TypeError(_functionName) {
 
 /**
  *  通用JS库
- * 
- * 
  */
 
 if (typeof zzz === 'undefined') var zzz = {};
@@ -122,7 +120,6 @@ zzz.lib = (function() {
 })();
 
 var TimeAxis = (function() {
-    //alert(__window.document.baseURI);
 
     /**
      * 私有变量定义
@@ -183,6 +180,25 @@ var TimeAxis = (function() {
             (this.baseX - this.width / 2).toString() + "," + (this.baseY + this.height * this.rat).toString()
         );
     }
+
+    /**
+     * 刻度线   tick mark
+     */
+    function ZTickMark(_x, _y, _w, _h, _color) {
+        this.SVGDom = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        this.baseLine = 110;
+        this.baseX = _x || 0;
+        this.baseY = this.baseLine || _y || 0;
+        this.offsetX = 0;
+        this.offsetY = 0;
+        this.width = _w || 0;
+        this.height = _h || 0;
+        this.rat = _r || 0.0;
+        this.isClick = false;
+
+
+    }
+    ZTickMark.prototype = new ZItem();
 
 
     function ZAxis() {

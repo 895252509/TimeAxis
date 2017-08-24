@@ -23,6 +23,5 @@ window.onload = function() {
     }
     i.addCom(btn);
     i.addCom(new i.ZAxis());
-
     i.addCom(new i.ZSlider(150, 0, 14, 20, 0.3));
 }
