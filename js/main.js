@@ -17,13 +17,12 @@ window.onload = function() {
 
     text.setAttribute("fill", "blue");
 
-    var btn = new i.ZButton(0, 0, 80, 30, "创建滑块");
+    var btn = new i.ZButton(10, 30, 80, 30, "创建滑块");
     btn.onclick = function() {
-        i.addCom(new i.ZSlider(150, 0, 20, 20, 0.5));
+        i.addCom(new i.ZSlider(150, 0, 14, 20, 0.3));
     }
     i.addCom(btn);
     i.addCom(new i.ZAxis());
 
-    var slider1 = new i.ZSlider(150, 0, 20, 20, 0.5);
-    i.addCom(slider1);
+    i.addCom(new i.ZSlider(150, 0, 14, 20, 0.3));
 }

@@ -130,6 +130,7 @@ var TimeAxis = (function() {
      */
     var __SVGDomChilds = [];
     var __SVGDom = null;
+    var __actDom = null;
     /**
      * 数据结构定义
      * 
@@ -168,37 +169,6 @@ var TimeAxis = (function() {
             (this.baseX - this.width / 2).toString() + "," + (this.baseY + this.height).toString() + " " +
             (this.baseX - this.width / 2).toString() + "," + (this.baseY + this.height * this.rat).toString()
         );
-        /*
-                this.SVGDom.onmousedown = function(e) {
-                    this.isClick = true;
-                    var tmpslider = findSlider(this);
-                    tmpslider.offsetX = e.offsetX; // - tmpslider.baseX;
-                    if (typeof tmpslider.baseLine === 'undefined')
-                        tmpslider.offsetY = e.offsetY; // - tmpslider.baseY;
-
-                }
-                this.SVGDom.onmouseup = function() {
-                        this.isClick = false;
-                    }
-                    
-                    this.SVGDom.onmousemove = function(e) {
-                        if (this.isClick) { //
-                            var tmpslider = findSlider(this);
-
-                            tmpslider.baseX += (e.offsetX - tmpslider.offsetX);
-                            if (typeof tmpslider.baseLine === 'undefined')
-                                tmpslider.baseY += (e.offsetY - tmpslider.offsetY);
-
-                            tmpslider.offsetX = e.offsetX; // - tmpslider.baseX;
-                            if (typeof tmpslider.baseLine === 'undefined')
-                                tmpslider.offsetY = e.offsetY; // - tmpslider.baseY;
-
-                            if (tmpslider != null)
-                                tmpslider.ReMoveAndReSize();
-
-                        }
-                    }*/
-
     }
     ZSlider.prototype = new ZItem();
     ZSlider.prototype.ReMoveAndReSize = function() {
@@ -264,7 +234,6 @@ var TimeAxis = (function() {
     ZText.prototype = new ZItem();
 
 
-
     /**
      * 私有函数定义
      * 
@@ -305,24 +274,28 @@ var TimeAxis = (function() {
 
             if (isOn) {
                 actDom.push(timeAxisObj.ArrayDom[i]);
-
             }
         }
 
         switch (e.type) {
             case "click":
+                __actDom = findSlider(e.srcElement);
                 actDom.forEach(function(element) {
                     if (typeof element.onclick !== "undefined") element.onclick(e);
                 }, this);
                 break;
             case "mousedown":
                 timeAxisObj.isClick = true;
-                actDom.forEach(function(element) {
-                    element.isClick = true;
-                    element.offsetX = e.offsetX - 10 - element.baseX;
-                    //if (typeof element.onmousedown !== "undefined") element.onmousedown(e);
-                }, this);
-
+                __actDom = findSlider(e.srcElement);
+                // actDom.forEach(function(element) {
+                //     element.isClick = true;
+                //     element.offsetX = e.offsetX - element.width / 2 - element.baseX;
+                //     //if (typeof element.onmousedown !== "undefined") element.onmousedown(e);
+                // }, this);
+                if (__actDom instanceof ZSlider) {
+                    __actDom.isClick = true;
+                    __actDom.offsetX = e.offsetX - __actDom.width / 2 - __actDom.baseX;
+                }
                 break;
             case "mouseup":
                 timeAxisObj.isClick = false;
@@ -334,11 +307,14 @@ var TimeAxis = (function() {
                 }, this);
                 break;
             case "mousemove":
-                timeAxisObj.ArrayDom.forEach(function(element) {
-                    if (element.isClick)
-                        element.baseX = e.offsetX - element.offsetX - 10;
-                    if (element instanceof ZSlider) element.ReMoveAndReSize();
-                }, this);
+                // timeAxisObj.ArrayDom.forEach(function(element) {
+                //     if (element.isClick)
+                //         element.baseX = e.offsetX - element.offsetX - element.width / 2;
+                //     if (element instanceof ZSlider) element.ReMoveAndReSize();
+                // }, this);
+                if (__actDom && __actDom.isClick)
+                    __actDom.baseX = e.offsetX - __actDom.offsetX - __actDom.width / 2;
+                if (__actDom && __actDom instanceof ZSlider) __actDom.ReMoveAndReSize();
                 actDom.forEach(function(element) {
                     //if (typeof element.onmousemove !== "undefined") element.onmousemove(e);
 
