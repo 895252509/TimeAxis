@@ -168,36 +168,36 @@ var TimeAxis = (function() {
             (this.baseX - this.width / 2).toString() + "," + (this.baseY + this.height).toString() + " " +
             (this.baseX - this.width / 2).toString() + "," + (this.baseY + this.height * this.rat).toString()
         );
-
-        this.SVGDom.onmousedown = function(e) {
-            this.isClick = true;
-            var tmpslider = findSlider(this);
-            tmpslider.offsetX = e.offsetX; // - tmpslider.baseX;
-            if (typeof tmpslider.baseLine === 'undefined')
-                tmpslider.offsetY = e.offsetY; // - tmpslider.baseY;
-
-        }
-        this.SVGDom.onmouseup = function() {
-                this.isClick = false;
-            }
-            /*
-            this.SVGDom.onmousemove = function(e) {
-                if (this.isClick) { //
+        /*
+                this.SVGDom.onmousedown = function(e) {
+                    this.isClick = true;
                     var tmpslider = findSlider(this);
-
-                    tmpslider.baseX += (e.offsetX - tmpslider.offsetX);
-                    if (typeof tmpslider.baseLine === 'undefined')
-                        tmpslider.baseY += (e.offsetY - tmpslider.offsetY);
-
                     tmpslider.offsetX = e.offsetX; // - tmpslider.baseX;
                     if (typeof tmpslider.baseLine === 'undefined')
                         tmpslider.offsetY = e.offsetY; // - tmpslider.baseY;
 
-                    if (tmpslider != null)
-                        tmpslider.ReMoveAndReSize();
-
                 }
-            }*/
+                this.SVGDom.onmouseup = function() {
+                        this.isClick = false;
+                    }
+                    
+                    this.SVGDom.onmousemove = function(e) {
+                        if (this.isClick) { //
+                            var tmpslider = findSlider(this);
+
+                            tmpslider.baseX += (e.offsetX - tmpslider.offsetX);
+                            if (typeof tmpslider.baseLine === 'undefined')
+                                tmpslider.baseY += (e.offsetY - tmpslider.offsetY);
+
+                            tmpslider.offsetX = e.offsetX; // - tmpslider.baseX;
+                            if (typeof tmpslider.baseLine === 'undefined')
+                                tmpslider.offsetY = e.offsetY; // - tmpslider.baseY;
+
+                            if (tmpslider != null)
+                                tmpslider.ReMoveAndReSize();
+
+                        }
+                    }*/
 
     }
     ZSlider.prototype = new ZItem();
@@ -250,11 +250,6 @@ var TimeAxis = (function() {
         this.SVGDom.setAttribute("style", "stroke-width:1;fill:#eeeeee;stroke:#000000;");
         this.SVGDom.appendChild(new ZText(_text, _x + Math.floor((this.width - fontlen) / 2), _y + this.fontSize + Math.floor((_h - this.fontSize) / 2) - 2, this.fontSize, "blue").SVGDom);
         this.SVGDom.appendChild(box);
-
-        box.onclick = function() {
-
-            __SVGDom.appendChild(new ZSlider(150, 110, 20, 20, 0.5).SVGDom);
-        }
     }
     ZButton.prototype = new ZItem();
 
@@ -308,27 +303,50 @@ var TimeAxis = (function() {
                 isOn = isOnObj(timeAxisObj.ArrayDom[i], new Point(e.offsetX, e.offsetY));
             }
 
-            if (isOn) actDom.push(timeAxisObj.ArrayDom[i]);
+            if (isOn) {
+                actDom.push(timeAxisObj.ArrayDom[i]);
+
+            }
         }
 
         switch (e.type) {
             case "click":
-                timeAxisObj.isClick = true;
                 actDom.forEach(function(element) {
                     if (typeof element.onclick !== "undefined") element.onclick(e);
+                }, this);
+                break;
+            case "mousedown":
+                timeAxisObj.isClick = true;
+                actDom.forEach(function(element) {
+                    element.isClick = true;
+                    element.offsetX = e.offsetX - 10 - element.baseX;
+                    //if (typeof element.onmousedown !== "undefined") element.onmousedown(e);
                 }, this);
 
                 break;
             case "mouseup":
                 timeAxisObj.isClick = false;
+                timeAxisObj.ArrayDom.forEach(function(element) {
+                    element.isClick = false;
+                }, this);
                 actDom.forEach(function(element) {
-                    if (typeof element.onmouseup !== "undefined") element.onmouseup(e);
+                    //if (typeof element.onmouseup !== "undefined") element.onmouseup(e);
                 }, this);
                 break;
             case "mousemove":
-                actDom.forEach(function(element) {
-                    if (typeof element.onmousemove !== "undefined") element.onmousemove(e);
+                timeAxisObj.ArrayDom.forEach(function(element) {
+                    if (element.isClick)
+                        element.baseX = e.offsetX - element.offsetX - 10;
+                    if (element instanceof ZSlider) element.ReMoveAndReSize();
                 }, this);
+                actDom.forEach(function(element) {
+                    //if (typeof element.onmousemove !== "undefined") element.onmousemove(e);
+
+                }, this);
+                break;
+            case "mouseout":
+
+                break;
             default:
                 break;
         }

@@ -17,21 +17,13 @@ window.onload = function() {
 
     text.setAttribute("fill", "blue");
 
-    //i.addCom(new i.ZButton(0, 0, 80, 30, "创建滑块"));
-    //i.addCom(new i.ZAxis());
-
-    var slider1 = new i.ZSlider(10, 0, 20, 20, 0.5);
-    slider1.onclick = function(e) {
-        console.log(e.type);
+    var btn = new i.ZButton(0, 0, 80, 30, "创建滑块");
+    btn.onclick = function() {
+        i.addCom(new i.ZSlider(150, 0, 20, 20, 0.5));
     }
+    i.addCom(btn);
+    i.addCom(new i.ZAxis());
 
-    slider1.onmousemove = function(e) {
-        console.log(e.type);
-    }
-
-    slider1.onmouseup = function(e) {
-        console.log(e.type);
-    }
-
+    var slider1 = new i.ZSlider(150, 0, 20, 20, 0.5);
     i.addCom(slider1);
 }
