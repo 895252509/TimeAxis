@@ -169,6 +169,9 @@ var TimeAxis = (function() {
             (this.baseX - this.width / 2).toString() + "," + (this.baseY + this.height).toString() + " " +
             (this.baseX - this.width / 2).toString() + "," + (this.baseY + this.height * this.rat).toString()
         );
+        this.SVGDom.onselectstart = function() {
+            return false;
+        }
     }
     ZSlider.prototype = new ZItem();
     ZSlider.prototype.ReMoveAndReSize = function() {
@@ -183,12 +186,12 @@ var TimeAxis = (function() {
 
 
     function ZAxis() {
-        this.baseX = 100;
-        this.baseY = 100;
-        this.width = 400;
-        this.height = 10;
+        this.baseX = 50;
+        this.baseY = 106;
+        this.width = 500;
+        this.height = 4;
         this.strokeWidth = 1;
-        this.fill = "#777777";
+        this.fill = "#772249";
         this.SVGDom = document.createElementNS("http://www.w3.org/2000/svg", "g");
         var mainDom = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         mainDom.setAttribute("x", this.baseX.toString());
@@ -260,7 +263,7 @@ var TimeAxis = (function() {
      * 接管DOM事件
      */
     function adapterEvent(e) {
-
+        console.log(e.type);
         var timeAxisObj = e.currentTarget.TimeAxis;
         var actDom = [];
 
@@ -323,6 +326,22 @@ var TimeAxis = (function() {
             case "mouseout":
 
                 break;
+            case "mouseleave":
+                timeAxisObj.ArrayDom.forEach(function(element) {
+                    element.isClick = false;
+                }, this);
+                break;
+            case "keyup":
+                switch (e.key) {
+                    case "Delete":
+                        var pos = timeAxisObj.ArrayDom.indexOf(__actDom);
+                        timeAxisObj.ArrayDom.splice(pos, 1);
+                        __actDom.SVGDom.parentNode.removeChild(__actDom.SVGDom);
+                        break;
+                    default:
+                        break;
+                }
+                break;
             default:
                 break;
         }
@@ -344,6 +363,9 @@ var TimeAxis = (function() {
         if (typeof _id === 'undefined')
             __SVGDom = document.getElementById("TimeAxis");
         __SVGDom = document.getElementById(_id);
+        __SVGDom.onmouseleave = function() {
+            __SVGDom.TimeAxis.__SVGDomChilds.__actDom.isClick = false;
+        }
         zzz.lib.getAllPrototypeNames(__SVGDom).forEach(function(element) {
             if (element === "onselectstart") {
                 __SVGDom[element] = function() {

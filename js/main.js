@@ -17,7 +17,7 @@ window.onload = function() {
 
     text.setAttribute("fill", "blue");
 
-    var btn = new i.ZButton(10, 30, 80, 30, "创建滑块");
+    var btn = new i.ZButton(10, 30, 80, 30, "增加滑块");
     btn.onclick = function() {
         i.addCom(new i.ZSlider(150, 0, 14, 20, 0.3));
     }
