@@ -1,16 +1,18 @@
-
-body,div{
+body,
+div {
     padding: 0px;
     margin: 0px;
 }
 
-#TimeAxisArea{
+#TimeAxisArea {
     width: 600px;
-    height: 420px;
+    height: 1000px;
     background-color: #eeeeee;
     border: 3px solid #cccccc;
     border-radius: 12px;
     margin: 40px;
 }
 
-
+.pointC {
+    cursor: default
+}

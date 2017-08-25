@@ -147,7 +147,7 @@ var TimeAxis = (function() {
 
     }
 
-    function ZSlider(_x, _y, _w, _h, _r) {
+    function ZSlider(_x, _y, _w, _h, _r, _color) {
         this.SVGDom = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
         this.baseLine = 110;
         this.baseX = _x || 0;
@@ -157,6 +157,7 @@ var TimeAxis = (function() {
         this.width = _w || 0;
         this.height = _h || 0;
         this.rat = _r || 0.0;
+        this.color = _color || "black";
         this.isClick = false;
 
         this.SVGDom.setAttribute("points",
@@ -166,6 +167,8 @@ var TimeAxis = (function() {
             (this.baseX - this.width / 2).toString() + "," + (this.baseY + this.height).toString() + " " +
             (this.baseX - this.width / 2).toString() + "," + (this.baseY + this.height * this.rat).toString()
         );
+        this.SVGDom.setAttribute("fill", this.color);
+        this.SVGDom.setAttribute("style", "opacity:0.78");
         this.SVGDom.onselectstart = function() {
             return false;
         }
@@ -185,29 +188,32 @@ var TimeAxis = (function() {
      * 刻度线   tick mark
      */
     function ZTickMark(_x, _y, _w, _h, _color) {
-        this.SVGDom = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-        this.baseLine = 110;
+        this.SVGDom = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        //this.baseLine = 110;
         this.baseX = _x || 0;
         this.baseY = this.baseLine || _y || 0;
         this.offsetX = 0;
         this.offsetY = 0;
         this.width = _w || 0;
         this.height = _h || 0;
-        this.rat = _r || 0.0;
         this.isClick = false;
 
-
+        this.SVGDom.setAttribute("x1", this.baseX.toString());
+        this.SVGDom.setAttribute("y1", this.baseY.toString());
+        this.SVGDom.setAttribute("x2", this.baseX.toString());
+        this.SVGDom.setAttribute("y2", (this.baseY - this.height).toString());
+        this.SVGDom.setAttribute("stroke-width", this.width.toString());
+        this.SVGDom.setAttribute("stroke", _color || "red");
     }
     ZTickMark.prototype = new ZItem();
 
-
-    function ZAxis() {
-        this.baseX = 50;
-        this.baseY = 106;
-        this.width = 500;
-        this.height = 4;
+    function ZAxis(_x, _y, _w, _h, _color) {
+        this.baseX = _x || 50;
+        this.baseY = _y || 106;
+        this.width = _w || 500;
+        this.height = _h || 4;
         this.strokeWidth = 1;
-        this.fill = "#772249";
+        this.fill = _color || "#2F4F4F";
         this.SVGDom = document.createElementNS("http://www.w3.org/2000/svg", "g");
         var mainDom = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         mainDom.setAttribute("x", this.baseX.toString());
@@ -217,7 +223,7 @@ var TimeAxis = (function() {
         this.SVGDom.appendChild(mainDom);
 
         this.SVGDom.setAttribute("style",
-            "stroke-width:1;fill:" + this.fill + ";opacity:0.9;");
+            "stroke-width:0;fill:" + this.fill + ";opacity:0.9;");
     }
     ZAxis.prototype = new ZItem();
 
@@ -234,11 +240,14 @@ var TimeAxis = (function() {
         box.setAttribute("y", this.baseY.toString());
         box.setAttribute("width", this.width.toString());
         box.setAttribute("height", this.height.toString());
-        box.setAttribute("style", "opacity:0.2");
+        box.setAttribute("style", "fill:#1111ff;opacity:0.2");
 
         this.SVGDom.setAttribute("style", "stroke-width:1;fill:#eeeeee;stroke:#000000;");
         this.SVGDom.appendChild(new ZText(_text, _x + Math.floor((this.width - fontlen) / 2), _y + this.fontSize + Math.floor((_h - this.fontSize) / 2) - 2, this.fontSize, "blue").SVGDom);
         this.SVGDom.appendChild(box);
+        this.SVGDom.onselectstart = function() {
+            return false;
+        }
     }
     ZButton.prototype = new ZItem();
 
@@ -248,9 +257,16 @@ var TimeAxis = (function() {
             ";fill: " + (_color || "black") + ";stroke: none;");
         this.SVGDom.setAttribute("x", _x.toString() + "");
         this.SVGDom.setAttribute("y", _y.toString() + "");
+        this.SVGDom.setAttribute("class", "pointC");
         this.SVGDom.innerHTML = _text || "";
+        this.SVGDom.onselectstart = function() {
+            return false;
+        }
     }
     ZText.prototype = new ZItem();
+    ZText.prototype.setText = function(str) {
+        this.SVGDom.innerHTML = str || "string";
+    }
 
 
     /**
@@ -335,8 +351,9 @@ var TimeAxis = (function() {
                     __actDom.baseX = e.offsetX - __actDom.offsetX - __actDom.width / 2;
                 if (__actDom && __actDom instanceof ZSlider) __actDom.ReMoveAndReSize();
                 actDom.forEach(function(element) {
-                    //if (typeof element.onmousemove !== "undefined") element.onmousemove(e);
-
+                    if (typeof element.onmousemove !== "undefined") {
+                        element.onmousemove(e);
+                    }
                 }, this);
                 break;
             case "mouseout":
@@ -350,13 +367,17 @@ var TimeAxis = (function() {
             case "keyup":
                 switch (e.key) {
                     case "Delete":
-                        var pos = timeAxisObj.ArrayDom.indexOf(__actDom);
-                        timeAxisObj.ArrayDom.splice(pos, 1);
-                        __actDom.SVGDom.parentNode.removeChild(__actDom.SVGDom);
+                        if (__actDom && typeof __actDom.ondelete !== "undefined") {
+                            __actDom.ondelete(e);
+                            __actDom = null;
+                        }
                         break;
                     default:
                         break;
                 }
+                break;
+            case "selectstart":
+                return false;
                 break;
             default:
                 break;
@@ -393,7 +414,6 @@ var TimeAxis = (function() {
         }, this);
 
     }
-
     return function(id) {
         areaInit(id);
         this.ZAxis = ZAxis;
@@ -401,12 +421,13 @@ var TimeAxis = (function() {
         this.ZItem = ZItem;
         this.ZSlider = ZSlider;
         this.ZText = ZText;
+        this.ZTickMark = ZTickMark;
         this.SVGDom = __SVGDom;
         this.isClick = false;
-
         this.ArrayDom = __SVGDomChilds;
 
         this.SVGDom.TimeAxis = this;
+        this.actDom = __actDom;
     }
 
 })();
@@ -420,5 +441,12 @@ TimeAxis.prototype = {
 
         this.ArrayDom.push(_com);
         this.SVGDom.appendChild(_com.SVGDom);
+    },
+    deleteCom: function(obj) {
+        if (!obj instanceof this.ZItem) throw TypeError();
+        var pos = this.ArrayDom.indexOf(obj);
+        if (pos < 0) return;
+        this.ArrayDom.splice(pos, 1);
+        obj.SVGDom.parentNode.removeChild(obj.SVGDom);
     }
 }
