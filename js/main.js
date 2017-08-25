@@ -94,20 +94,24 @@ function addSlider(_i, _arr, _axisObj, currDate, _color) {
     objdef.zslider.onmousemove = function(e) {
         if (objdef.zslider.isClick) {
             var ioffset = e.offsetX - _axisObj.axisleft - _axisObj.axisUnUseLength / 2;
-            var mon = Math.ceil(ioffset / _axisObj.axisTick1);
+            var mon = Math.floor(ioffset / _axisObj.axisTick1);
+            if (mon < 0) mon = -1;
             var day = (ioffset % _axisObj.axisTick1) / _axisObj.axisTick1 * getDaysInOneMonth(2017, mon + 1);
             day = Math.round(day);
+            if (day < 0) day = 0;
+            else if (day >= 31) day = 31;
             var createDateText = null;
             if (day === 0) {
                 createDateText = "2017/" + itranNum(mon + 1);
             } else {
-                createDateText = "2017/" + itranNum(mon) + "/" + itranNum(day);
+                createDateText = "2017/" + itranNum(mon + 1) + "/" + itranNum(day);
             }
 
             var currDate = new Date(createDateText);
             var dateText = currDate.getFullYear().toString() + "/" + itranNum(currDate.getMonth() + 1) + "/" +
                 itranNum(currDate.getDate());
-            if (dateText.substring(0, 1) === "N") dateText = "超出范围";
+            if (dateText.substring(0, 1) === "N")
+                dateText = "超出范围";
             objdef.text = dateText;
             objdef.ztext.setText(dateText);
 

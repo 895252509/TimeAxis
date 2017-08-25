@@ -258,14 +258,14 @@ var TimeAxis = (function() {
         this.SVGDom.setAttribute("x", _x.toString() + "");
         this.SVGDom.setAttribute("y", _y.toString() + "");
         this.SVGDom.setAttribute("class", "pointC");
-        this.SVGDom.innerHTML = _text || "";
+        this.SVGDom.textContent = _text || "";
         this.SVGDom.onselectstart = function() {
             return false;
         }
     }
     ZText.prototype = new ZItem();
     ZText.prototype.setText = function(str) {
-        this.SVGDom.innerHTML = str || "string";
+        this.SVGDom.textContent = str || "string";
     }
 
 
@@ -349,7 +349,12 @@ var TimeAxis = (function() {
                 // }, this);
                 if (__actDom && __actDom.isClick)
                     __actDom.baseX = e.offsetX - __actDom.offsetX - __actDom.width / 2;
-                if (__actDom && __actDom instanceof ZSlider) __actDom.ReMoveAndReSize();
+                if (__actDom && __actDom instanceof ZSlider) {
+                    __actDom.ReMoveAndReSize();
+                    if (typeof __actDom.onmousemove !== "undefined") {
+                        __actDom.onmousemove(e);
+                    }
+                }
                 actDom.forEach(function(element) {
                     if (typeof element.onmousemove !== "undefined") {
                         element.onmousemove(e);
